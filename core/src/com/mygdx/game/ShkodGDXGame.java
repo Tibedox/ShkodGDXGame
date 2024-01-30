@@ -4,19 +4,20 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 public class ShkodGDXGame extends ApplicationAdapter {
-	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1600;
+	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1700;
 
 	SpriteBatch batch;
 	OrthographicCamera camera;
 
 	Texture img;
-	Texture imgBackGround;
+	Texture imgStars;
 
-	int nLeafs = 5500; // количество листьев
+	Stars[] stars = new Stars[2];
+	int nLeafs = 50; // количество листьев
 	Leaf[] leaf = new Leaf[nLeafs];
+
 	
 	@Override
 	public void create () {
@@ -25,7 +26,10 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 
 		img = new Texture("leaf.png");
-		imgBackGround = new Texture("autumnforest.png");
+		imgStars = new Texture("stars.png");
+
+		stars[0] = new Stars(0);
+		stars[1] = new Stars(SCR_HEIGHT);
 
 		for (int i = 0; i < nLeafs; i++) {
 			leaf[i] = new Leaf();
@@ -34,18 +38,24 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		// события
+		for (int i = 0; i < stars.length; i++) {
+			stars[i].move();
+		}
 		for (int i = 0; i < nLeafs; i++) {
 			leaf[i].move();
 		}
 
-		ScreenUtils.clear(0.5f, 0, 0, 1);
+		// отрисовка
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
+		for (int i = 0; i < stars.length; i++) {
+			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
+		}
+
 		for (int i = 0; i < nLeafs; i++) {
 			batch.draw(img, leaf[i].x, leaf[i].y, leaf[i].width, leaf[i].height);
 		}
-
 		batch.end();
 	}
 	

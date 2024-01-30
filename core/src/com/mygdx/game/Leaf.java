@@ -1,27 +1,28 @@
 package com.mygdx.game;
 
-import java.util.Random;
+import static com.mygdx.game.ShkodGDXGame.*;
+
+import com.badlogic.gdx.math.MathUtils;
 
 public class Leaf {
     float x, y;
-    float speedX, speedY;
+    float vx, vy;
     int width, height;
 
     Leaf(){
-        width = 160;
-        height = 160;
-        Random rnd = new Random();
-        speedX = rnd.nextFloat()*2;
-        speedY = -rnd.nextFloat()*5-2;
+        width = height = MathUtils.random(100, 200);
 
-        x = rnd.nextFloat()*(ShkodGDXGame.SCR_WIDTH+200)-200;
-        y = rnd.nextFloat()*(ShkodGDXGame.SCR_HEIGHT+200)-200;
+        vx = MathUtils.random(0, 2f);
+        vy = MathUtils.random(-7, -2);
+
+        x = MathUtils.random(0, SCR_WIDTH-width);
+        y = MathUtils.random(0, SCR_HEIGHT-height);
     }
 
     void move(){
-        x += speedX;
-        if (x > ShkodGDXGame.SCR_WIDTH) x = -width;
-        y += speedY;
-        if (y < -height) y = ShkodGDXGame.SCR_HEIGHT;
+        x += vx;
+        if (x > SCR_WIDTH) x = -width;
+        y += vy;
+        if (y < -height) y = SCR_HEIGHT;
     }
 }
