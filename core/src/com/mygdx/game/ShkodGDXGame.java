@@ -11,13 +11,12 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	OrthographicCamera camera;
 
-	Texture img;
+	Texture imgEnemyShip;
 	Texture imgStars;
 
 	Stars[] stars = new Stars[2];
-	int nLeafs = 50; // количество листьев
-	Leaf[] leaf = new Leaf[nLeafs];
 
+	EnemyShip[] enemyShips = new EnemyShip[10];
 	
 	@Override
 	public void create () {
@@ -25,15 +24,16 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 
-		img = new Texture("leaf.png");
+		imgEnemyShip = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
 
 		stars[0] = new Stars(0);
 		stars[1] = new Stars(SCR_HEIGHT);
 
-		for (int i = 0; i < nLeafs; i++) {
-			leaf[i] = new Leaf();
+		for (int i = 0; i < enemyShips.length; i++) {
+			enemyShips[i] = new EnemyShip();
 		}
+
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < stars.length; i++) {
 			stars[i].move();
 		}
-		for (int i = 0; i < nLeafs; i++) {
-			leaf[i].move();
+		for (int i = 0; i < enemyShips.length; i++) {
+			enemyShips[i].move();
 		}
 
 		// отрисовка
@@ -52,16 +52,17 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < stars.length; i++) {
 			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
 		}
-
-		for (int i = 0; i < nLeafs; i++) {
-			batch.draw(img, leaf[i].x, leaf[i].y, leaf[i].width, leaf[i].height);
+		for (int i = 0; i < enemyShips.length; i++) {
+			batch.draw(imgEnemyShip, enemyShips[i].getX(), enemyShips[i].getY(), enemyShips[i].width, enemyShips[i].height);
 		}
+
 		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+		imgEnemyShip.dispose();
+		imgStars.dispose();
 	}
 }
