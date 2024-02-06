@@ -1,15 +1,18 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 
 public class ShkodGDXGame extends ApplicationAdapter {
 	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1700;
 
 	SpriteBatch batch;
 	OrthographicCamera camera;
+	Vector3 touch;
 
 	Texture imgEnemyShip;
 	Texture imgShip;
@@ -26,6 +29,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
+		touch = new Vector3();
 
 		imgEnemyShip = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
@@ -46,6 +50,14 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		// касания
+		if(Gdx.input.isTouched()){
+			touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touch);
+
+			ship.hit(touch.x);
+		}
+
 		// события
 		for (int i = 0; i < stars.length; i++) {
 			stars[i].move();

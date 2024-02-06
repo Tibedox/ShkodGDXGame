@@ -15,6 +15,17 @@ public class Ship extends SpaceObject{
     void move(){
         super.move();
 
-        if (x < width/2 | x>SCR_WIDTH-width/2) vx = -vx;
+        if (x < width/2){
+            vx = 0;
+            x = width/2;
+        }
+        if(x > SCR_WIDTH-width/2){
+            vx = 0;
+            x = SCR_WIDTH-width/2;
+        }
+    }
+
+    void hit(float tx){
+        vx = (tx-x)/10;
     }
 }
