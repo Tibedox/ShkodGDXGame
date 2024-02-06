@@ -12,11 +12,14 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	OrthographicCamera camera;
 
 	Texture imgEnemyShip;
+	Texture imgShip;
 	Texture imgStars;
+	Texture imgShot;
 
 	Stars[] stars = new Stars[2];
-
 	EnemyShip[] enemyShips = new EnemyShip[10];
+	Shot shot;
+	Ship ship;
 	
 	@Override
 	public void create () {
@@ -26,14 +29,19 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 		imgEnemyShip = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
+		imgShip = new Texture("ship.png");
+		imgShot = new Texture("shipshot.png");
 
 		stars[0] = new Stars(0);
 		stars[1] = new Stars(SCR_HEIGHT);
 
+		ship = new Ship();
+
+		shot = new Shot(ship.x, ship.y);
+
 		for (int i = 0; i < enemyShips.length; i++) {
 			enemyShips[i] = new EnemyShip();
 		}
-
 	}
 
 	@Override
@@ -45,6 +53,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < enemyShips.length; i++) {
 			enemyShips[i].move();
 		}
+		shot.move();
+		ship.move();
 
 		// отрисовка
 		batch.setProjectionMatrix(camera.combined);
@@ -55,7 +65,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < enemyShips.length; i++) {
 			batch.draw(imgEnemyShip, enemyShips[i].getX(), enemyShips[i].getY(), enemyShips[i].width, enemyShips[i].height);
 		}
-
+		batch.draw(imgShot, shot.getX(), shot.getY(), shot.width, shot.height);
+		batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
 		batch.end();
 	}
 	
@@ -64,5 +75,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		batch.dispose();
 		imgEnemyShip.dispose();
 		imgStars.dispose();
+		imgShip.dispose();
+		imgShot.dispose();
 	}
 }
