@@ -22,11 +22,12 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Texture imgShot;
 
 	Stars[] stars = new Stars[2];
-	EnemyShip[] enemyShips = new EnemyShip[10];
+	Array<Enemy> enemies = new Array<>();
 	Array<Shot> shots = new Array<>();
 	Ship ship;
 
 	long timeLastShot, timeShotInterval = 800;
+	long timeSpawnLastEnemy, timeSpawnEnemyInterval = 1600;
 	
 	@Override
 	public void create () {
@@ -44,11 +45,6 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		stars[1] = new Stars(SCR_HEIGHT);
 
 		ship = new Ship();
-
-		for (int i = 0; i < enemyShips.length; i++) {
-			enemyShips[i] = new EnemyShip();
-		}
-		System.out.println(TimeUtils.millis());
 	}
 
 	@Override
@@ -65,8 +61,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < stars.length; i++) {
 			stars[i].move();
 		}
-		for (int i = 0; i < enemyShips.length; i++) {
-			enemyShips[i].move();
+		for (int i = 0; i < enemies.size; i++) {
+			enemies.get(i).move();
+			if(enemies.get(i).outOfScreen()){
+				enemies.removeIndex(i);
+			}
 		}
 		for (int i = 0; i < shots.size; i++) {
 			shots.get(i).move();
@@ -76,7 +75,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		}
 		ship.move();
 		spawnShots();
-		System.out.println(shots.size);
+		spawnEnemies();
 
 		// отрисовка
 		batch.setProjectionMatrix(camera.combined);
@@ -84,8 +83,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < stars.length; i++) {
 			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
 		}
-		for (int i = 0; i < enemyShips.length; i++) {
-			batch.draw(imgEnemyShip, enemyShips[i].getX(), enemyShips[i].getY(), enemyShips[i].width, enemyShips[i].height);
+		for (int i = 0; i < enemies.size; i++) {
+			batch.draw(imgEnemyShip, enemies.get(i).getX(), enemies.get(i).getY(), enemies.get(i).width, enemies.get(i).height);
 		}
 		for (int i = 0; i < shots.size; i++) {
 			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
@@ -107,6 +106,13 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
 			shots.add(new Shot(ship.x, ship.y));
 			timeLastShot = TimeUtils.millis();
+		}
+	}
+
+	void spawnEnemies() {
+		if(TimeUtils.millis() > timeSpawnLastEnemy+timeSpawnEnemyInterval) {
+			enemies.add(new Enemy());
+			timeSpawnLastEnemy = TimeUtils.millis();
 		}
 	}
 }
