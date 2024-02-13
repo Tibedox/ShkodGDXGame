@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class ShkodGDXGame extends ApplicationAdapter {
 	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1700;
@@ -21,8 +23,10 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 	Stars[] stars = new Stars[2];
 	EnemyShip[] enemyShips = new EnemyShip[10];
-	Shot shot;
+	Array<Shot> shots = new Array<>();
 	Ship ship;
+
+	long timeLastShot, timeShotInterval = 800;
 	
 	@Override
 	public void create () {
@@ -41,11 +45,10 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 		ship = new Ship();
 
-		shot = new Shot(ship.x, ship.y);
-
 		for (int i = 0; i < enemyShips.length; i++) {
 			enemyShips[i] = new EnemyShip();
 		}
+		System.out.println(TimeUtils.millis());
 	}
 
 	@Override
@@ -65,8 +68,15 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < enemyShips.length; i++) {
 			enemyShips[i].move();
 		}
-		shot.move();
+		for (int i = 0; i < shots.size; i++) {
+			shots.get(i).move();
+			if(shots.get(i).outOfScreen()) {
+				shots.removeIndex(i);
+			}
+		}
 		ship.move();
+		spawnShots();
+		System.out.println(shots.size);
 
 		// отрисовка
 		batch.setProjectionMatrix(camera.combined);
@@ -77,7 +87,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < enemyShips.length; i++) {
 			batch.draw(imgEnemyShip, enemyShips[i].getX(), enemyShips[i].getY(), enemyShips[i].width, enemyShips[i].height);
 		}
-		batch.draw(imgShot, shot.getX(), shot.getY(), shot.width, shot.height);
+		for (int i = 0; i < shots.size; i++) {
+			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
+		}
 		batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
 		batch.end();
 	}
@@ -89,5 +101,12 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		imgStars.dispose();
 		imgShip.dispose();
 		imgShot.dispose();
+	}
+
+	void spawnShots() {
+		if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
+			shots.add(new Shot(ship.x, ship.y));
+			timeLastShot = TimeUtils.millis();
+		}
 	}
 }

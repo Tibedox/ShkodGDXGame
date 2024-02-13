@@ -6,10 +6,8 @@ public class Shot extends SpaceObject{
 
     Shot(float shipX, float shipY){
         width = height = 128;
-
         vx = 0;
         vy = 8f;
-
         x = shipX;
         y = shipY;
     }
@@ -17,7 +15,9 @@ public class Shot extends SpaceObject{
     @Override
     void move(){
         super.move();
+    }
 
-        if (y > SCR_HEIGHT+height/2) y = SCR_HEIGHT/12;
+    boolean outOfScreen(){
+        return y > SCR_HEIGHT+height/2;
     }
 }
