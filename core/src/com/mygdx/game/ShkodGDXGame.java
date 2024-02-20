@@ -65,6 +65,10 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			enemies.get(i).move();
 			if(enemies.get(i).outOfScreen()){
 				enemies.removeIndex(i);
+				continue;
+			}
+			if(enemies.get(i).overlap(ship)){
+				enemies.removeIndex(i);
 			}
 		}
 		for (int i = 0; i < shots.size; i++) {

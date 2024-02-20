@@ -17,4 +17,8 @@ public class SpaceObject {
     float getY(){
         return y-height/2;
     }
+
+    boolean overlap(SpaceObject object) {
+        return Math.abs(x-object.x)<width/2+object.width/2 & Math.abs(y-object.y)<height/3+object.height/3;
+    }
 }
