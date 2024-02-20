@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -17,10 +18,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	OrthographicCamera camera;
 	Vector3 touch;
 
-	Texture imgEnemyShip;
+	Texture imgEnemy;
 	Texture imgShip;
 	Texture imgStars;
 	Texture imgShot;
+	TextureRegion[] imgFragment = new TextureRegion[4];
 
 	Sound sndShot;
 	Sound sndExplosion;
@@ -40,10 +42,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 		touch = new Vector3();
 
-		imgEnemyShip = new Texture("enemy1.png");
+		imgEnemy = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
 		imgShip = new Texture("ship.png");
 		imgShot = new Texture("shipshot.png");
+		imgFragment[0] = new TextureRegion(imgEnemy, 100, 100, 100, 100);
 
 		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
 		sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
@@ -105,19 +108,20 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
 		}
 		for (int i = 0; i < enemies.size; i++) {
-			batch.draw(imgEnemyShip, enemies.get(i).getX(), enemies.get(i).getY(), enemies.get(i).width, enemies.get(i).height);
+			batch.draw(imgEnemy, enemies.get(i).getX(), enemies.get(i).getY(), enemies.get(i).width, enemies.get(i).height);
 		}
 		for (int i = 0; i < shots.size; i++) {
 			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
 		}
 		batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
+		//batch.draw(imgFragment[0], SCR_WIDTH/2, SCR_HEIGHT/2);
 		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		imgEnemyShip.dispose();
+		imgEnemy.dispose();
 		imgStars.dispose();
 		imgShip.dispose();
 		imgShot.dispose();
