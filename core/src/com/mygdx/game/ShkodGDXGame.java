@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +21,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Texture imgShip;
 	Texture imgStars;
 	Texture imgShot;
+
+	Sound sndShot;
+	Sound sndExplosion;
 
 	Stars[] stars = new Stars[2];
 	Array<Enemy> enemies = new Array<>();
@@ -40,6 +44,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		imgStars = new Texture("stars.png");
 		imgShip = new Texture("ship.png");
 		imgShot = new Texture("shipshot.png");
+
+		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
+		sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
 
 		stars[0] = new Stars(0);
 		stars[1] = new Stars(SCR_HEIGHT);
@@ -69,18 +76,20 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			}
 			if(enemies.get(i).overlap(ship)){
 				enemies.removeIndex(i);
+				sndExplosion.play();
 			}
 		}
 		for (int i = 0; i < shots.size; i++) {
 			shots.get(i).move();
 			if(shots.get(i).outOfScreen()) {
 				shots.removeIndex(i);
-				break;
+				continue;
 			}
 			for (int j = 0; j < enemies.size; j++) {
 				if(shots.get(i).overlap(enemies.get(j))){
 					enemies.removeIndex(j);
 					shots.removeIndex(i);
+					sndExplosion.play();
 					break;
 				}
 			}
@@ -112,12 +121,15 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		imgStars.dispose();
 		imgShip.dispose();
 		imgShot.dispose();
+		sndShot.dispose();
+		sndExplosion.dispose();
 	}
 
 	void spawnShots() {
 		if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
 			shots.add(new Shot(ship.x, ship.y));
 			timeLastShot = TimeUtils.millis();
+			sndShot.play(0.2f);
 		}
 	}
 
