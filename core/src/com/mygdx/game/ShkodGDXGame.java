@@ -32,7 +32,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Array<Shot> shots = new Array<>();
 	Array<Fragment> fragments = new Array<>();
 	Ship ship;
-	int numFragments = 50;
+	int numFragments = 40;
 
 	long timeLastShot, timeShotInterval = 800;
 	long timeSpawnLastEnemy, timeSpawnEnemyInterval = 1600;
@@ -116,7 +116,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
 		}
 		for (int i = 0; i < fragments.size; i++) {
-			batch.draw(imgFragment[fragments.get(i).img], fragments.get(i).x, fragments.get(i).y, fragments.get(i).width, fragments.get(i).height);
+			batch.draw(imgFragment[fragments.get(i).img], fragments.get(i).x, fragments.get(i).y,
+					fragments.get(i).width/2, fragments.get(i).height/2, fragments.get(i).width, fragments.get(i).height,
+					1, 1, fragments.get(i).rotation);
 		}
 		for (int i = 0; i < enemies.size; i++) {
 			batch.draw(imgEnemy, enemies.get(i).getX(), enemies.get(i).getY(), enemies.get(i).width, enemies.get(i).height);
