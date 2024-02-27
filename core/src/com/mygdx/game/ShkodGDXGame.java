@@ -22,7 +22,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Texture imgShip;
 	Texture imgStars;
 	Texture imgShot;
-	TextureRegion[] imgFragment = new TextureRegion[4];
+	TextureRegion[] imgFragment = new TextureRegion[16];
 
 	Sound sndShot;
 	Sound sndExplosion;
@@ -30,7 +30,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Stars[] stars = new Stars[2];
 	Array<Enemy> enemies = new Array<>();
 	Array<Shot> shots = new Array<>();
+	Array<Fragment> fragments = new Array<>();
 	Ship ship;
+	int numFragments = 50;
 
 	long timeLastShot, timeShotInterval = 800;
 	long timeSpawnLastEnemy, timeSpawnEnemyInterval = 1600;
@@ -46,7 +48,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		imgStars = new Texture("stars.png");
 		imgShip = new Texture("ship.png");
 		imgShot = new Texture("shipshot.png");
-		imgFragment[0] = new TextureRegion(imgEnemy, 100, 100, 100, 100);
+		for (int i = 0; i < imgFragment.length; i++) {
+			imgFragment[i] = new TextureRegion(imgEnemy, i%4*100, i/4*100, 100, 100);
+		}
 
 		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
 		sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
@@ -71,6 +75,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < stars.length; i++) {
 			stars[i].move();
 		}
+		for (int i = 0; i < fragments.size; i++) {
+			fragments.get(i).move();
+		}
 		for (int i = 0; i < enemies.size; i++) {
 			enemies.get(i).move();
 			if(enemies.get(i).outOfScreen()){
@@ -90,6 +97,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			}
 			for (int j = 0; j < enemies.size; j++) {
 				if(shots.get(i).overlap(enemies.get(j))){
+					spawnFragments(enemies.get(j));
 					enemies.removeIndex(j);
 					shots.removeIndex(i);
 					sndExplosion.play();
@@ -107,6 +115,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < stars.length; i++) {
 			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
 		}
+		for (int i = 0; i < fragments.size; i++) {
+			batch.draw(imgFragment[fragments.get(i).img], fragments.get(i).x, fragments.get(i).y, fragments.get(i).width, fragments.get(i).height);
+		}
 		for (int i = 0; i < enemies.size; i++) {
 			batch.draw(imgEnemy, enemies.get(i).getX(), enemies.get(i).getY(), enemies.get(i).width, enemies.get(i).height);
 		}
@@ -114,7 +125,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
 		}
 		batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
-		//batch.draw(imgFragment[0], SCR_WIDTH/2, SCR_HEIGHT/2);
+
 		batch.end();
 	}
 	
@@ -141,6 +152,12 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		if(TimeUtils.millis() > timeSpawnLastEnemy+timeSpawnEnemyInterval) {
 			enemies.add(new Enemy());
 			timeSpawnLastEnemy = TimeUtils.millis();
+		}
+	}
+
+	void spawnFragments(Enemy enemy) {
+		for (int i = 0; i < numFragments; i++) {
+			fragments.add(new Fragment(enemy));
 		}
 	}
 }
