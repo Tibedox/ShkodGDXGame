@@ -4,6 +4,7 @@ public class SpaceObject {
     float x, y;
     float vx, vy;
     float width, height;
+    int type;
 
     void move(){
         x += vx;

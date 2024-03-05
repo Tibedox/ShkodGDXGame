@@ -6,8 +6,8 @@ public class Fragment extends SpaceObject{
     int img;
     float rotation, speedRotation;
 
-
     public Fragment(SpaceObject object) {
+        type = object.type;
         img = MathUtils.random(0, 15);
         x = object.x;
         y = object.y;

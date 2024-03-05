@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
@@ -12,28 +13,34 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class ShkodGDXGame extends ApplicationAdapter {
+	// константы
 	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1700;
 
+	// системные объекты
 	SpriteBatch batch;
 	OrthographicCamera camera;
 	Vector3 touch;
 
+	// ресурсы
+	BitmapFont font;
 	Texture imgEnemy;
 	Texture imgShip;
 	Texture imgStars;
 	Texture imgShot;
-	TextureRegion[] imgFragment = new TextureRegion[16];
-
+	TextureRegion[][] imgFragment = new TextureRegion[2][16];
 	Sound sndShot;
 	Sound sndExplosion;
 
+	// игровые объекты
 	Stars[] stars = new Stars[2];
 	Array<Enemy> enemies = new Array<>();
 	Array<Shot> shots = new Array<>();
 	Array<Fragment> fragments = new Array<>();
 	Ship ship;
-	int numFragments = 40;
 
+	// игровые переменные
+	int numFragments = 40;
+	int kills;
 	long timeLastShot, timeShotInterval = 800;
 	long timeSpawnLastEnemy, timeSpawnEnemyInterval = 1600;
 	
@@ -44,12 +51,16 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 		touch = new Vector3();
 
+		font = new BitmapFont(Gdx.files.internal("dscrystal70.fnt"));
 		imgEnemy = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
 		imgShip = new Texture("ship.png");
 		imgShot = new Texture("shipshot.png");
-		for (int i = 0; i < imgFragment.length; i++) {
-			imgFragment[i] = new TextureRegion(imgEnemy, i%4*100, i/4*100, 100, 100);
+		for (int i = 0; i < imgFragment[0].length; i++) {
+			imgFragment[0][i] = new TextureRegion(imgShip, i%4*100, i/4*100, 100, 100);
+		}
+		for (int i = 0; i < imgFragment[1].length; i++) {
+			imgFragment[1][i] = new TextureRegion(imgEnemy, i%4*100, i/4*100, 100, 100);
 		}
 
 		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
@@ -82,6 +93,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			enemies.get(i).move();
 			if(enemies.get(i).outOfScreen()){
 				enemies.removeIndex(i);
+				killShip();
 				continue;
 			}
 			if(enemies.get(i).overlap(ship)){
@@ -101,6 +113,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 					enemies.removeIndex(j);
 					shots.removeIndex(i);
 					sndExplosion.play();
+					kills++;
 					break;
 				}
 			}
@@ -109,14 +122,14 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		spawnShots();
 		spawnEnemies();
 
-		// отрисовка
+		// отрисовка всего
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		for (int i = 0; i < stars.length; i++) {
 			batch.draw(imgStars, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
 		}
 		for (int i = 0; i < fragments.size; i++) {
-			batch.draw(imgFragment[fragments.get(i).img], fragments.get(i).x, fragments.get(i).y,
+			batch.draw(imgFragment[fragments.get(i).type][fragments.get(i).img], fragments.get(i).x, fragments.get(i).y,
 					fragments.get(i).width/2, fragments.get(i).height/2, fragments.get(i).width, fragments.get(i).height,
 					1, 1, fragments.get(i).rotation);
 		}
@@ -127,7 +140,10 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
 		}
 		batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
-
+		font.draw(batch, "KILLS: "+kills, 10, SCR_HEIGHT-10);
+		for (int i = 0; i < ship.lives; i++) {
+			batch.draw(imgShip, SCR_WIDTH-70*i-70, SCR_HEIGHT-70, 60, 60);
+		}
 		batch.end();
 	}
 	
@@ -157,9 +173,21 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		}
 	}
 
-	void spawnFragments(Enemy enemy) {
+	void spawnFragments(SpaceObject object) {
 		for (int i = 0; i < numFragments; i++) {
-			fragments.add(new Fragment(enemy));
+			fragments.add(new Fragment(object));
 		}
+	}
+
+	void killShip() {
+		ship.lives--;
+		if(ship.lives == 0) {
+			gameOver();
+		}
+		spawnFragments(ship);
+	}
+
+	void gameOver() {
+
 	}
 }
