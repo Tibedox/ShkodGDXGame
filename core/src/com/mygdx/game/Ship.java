@@ -4,7 +4,7 @@ import static com.mygdx.game.ShkodGDXGame.SCR_HEIGHT;
 import static com.mygdx.game.ShkodGDXGame.SCR_WIDTH;
 
 public class Ship extends SpaceObject{
-    int lives = 5;
+    int lives = 1;
     boolean isAlive;
 
     Ship(){

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -22,7 +23,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Vector3 touch;
 
 	// ресурсы
-	BitmapFont font;
+	BitmapFont fontSmall;
+	BitmapFont fontLarge;
 	Texture imgEnemy;
 	Texture imgShip;
 	Texture imgStars;
@@ -41,6 +43,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	// игровые переменные
 	int numFragments = 40;
 	int kills;
+	boolean isGameOver;
 
 	// временнЫе переменные
 	long timeLastShot, timeShotInterval = 800;
@@ -54,7 +57,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 		touch = new Vector3();
 
-		font = new BitmapFont(Gdx.files.internal("dscrystal70.fnt"));
+		fontSmall = new BitmapFont(Gdx.files.internal("dscrystal70.fnt"));
+		fontLarge = new BitmapFont(Gdx.files.internal("dscrystal100.fnt"));
 		imgEnemy = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
 		imgShip = new Texture("ship.png");
@@ -129,10 +133,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			spawnShots();
 			spawnEnemies();
 			speedUp();
-		} else if(shots.size == 0 & enemies.size == 0){
+		} else if(shots.size == 0 & enemies.size == 0 & !isGameOver){
 			ship.respawn();
 		}
-		System.out.println(Enemy.scaleSpeed);
 
 		// отрисовка всего
 		batch.setProjectionMatrix(camera.combined);
@@ -154,10 +157,14 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		if(ship.isAlive) {
 			batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
 		}
-		font.draw(batch, "KILLS: "+kills, 10, SCR_HEIGHT-10);
+		fontSmall.draw(batch, "KILLS: "+kills, 10, SCR_HEIGHT-10);
 		for (int i = 0; i < ship.lives; i++) {
 			batch.draw(imgShip, SCR_WIDTH-70*i-70, SCR_HEIGHT-70, 60, 60);
 		}
+		if(isGameOver) {
+			fontLarge.draw(batch, "GAME OVER", 0, SCR_HEIGHT/4*3, SCR_WIDTH, Align.center, true);
+		}
+
 		batch.end();
 	}
 	
@@ -170,6 +177,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		imgShot.dispose();
 		sndShot.dispose();
 		sndExplosion.dispose();
+		fontSmall.dispose();
+		fontLarge.dispose();
 	}
 
 	void spawnShots() {
@@ -211,6 +220,6 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	}
 
 	void gameOver() {
-
+		isGameOver = true;
 	}
 }
