@@ -41,8 +41,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	// игровые переменные
 	int numFragments = 40;
 	int kills;
+
+	// временнЫе переменные
 	long timeLastShot, timeShotInterval = 800;
 	long timeSpawnLastEnemy, timeSpawnEnemyInterval = 1600;
+	long timeLastSpeedUp, timeEnemiesSpeedUp = 10000;
 	
 	@Override
 	public void create () {
@@ -125,9 +128,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			ship.move();
 			spawnShots();
 			spawnEnemies();
+			speedUp();
 		} else if(shots.size == 0 & enemies.size == 0){
 			ship.respawn();
 		}
+		System.out.println(Enemy.scaleSpeed);
 
 		// отрисовка всего
 		batch.setProjectionMatrix(camera.combined);
@@ -196,6 +201,13 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			gameOver();
 		}
 		spawnFragments(ship);
+	}
+
+	void speedUp() {
+		if(timeLastSpeedUp + timeEnemiesSpeedUp < TimeUtils.millis()){
+			timeLastSpeedUp = TimeUtils.millis();
+			Enemy.scaleSpeed+=0.2f;
+		}
 	}
 
 	void gameOver() {
