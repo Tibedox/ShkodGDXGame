@@ -5,12 +5,12 @@ import static com.mygdx.game.ShkodGDXGame.SCR_WIDTH;
 
 public class Ship extends SpaceObject{
     int lives = 5;
+    boolean isAlive;
 
     Ship(){
         type = 0;
         width = height = 128;
-        x = SCR_WIDTH/2;
-        y = SCR_HEIGHT/12;
+        respawn();
     }
 
     @Override
@@ -32,5 +32,11 @@ public class Ship extends SpaceObject{
             vx = 0;
             x = SCR_WIDTH-width/2;
         }
+    }
+
+    void respawn() {
+        isAlive = true;
+        x = SCR_WIDTH/2;
+        y = SCR_HEIGHT/12;
     }
 }

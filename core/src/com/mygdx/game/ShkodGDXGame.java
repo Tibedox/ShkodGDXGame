@@ -93,11 +93,14 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			enemies.get(i).move();
 			if(enemies.get(i).outOfScreen()){
 				enemies.removeIndex(i);
-				killShip();
+				if(ship.isAlive) {
+					killShip();
+				}
 				continue;
 			}
-			if(enemies.get(i).overlap(ship)){
+			if(ship.isAlive && enemies.get(i).overlap(ship)){
 				enemies.removeIndex(i);
+				killShip();
 				sndExplosion.play();
 			}
 		}
@@ -118,9 +121,13 @@ public class ShkodGDXGame extends ApplicationAdapter {
 				}
 			}
 		}
-		ship.move();
-		spawnShots();
-		spawnEnemies();
+		if(ship.isAlive) {
+			ship.move();
+			spawnShots();
+			spawnEnemies();
+		} else if(shots.size == 0 & enemies.size == 0){
+			ship.respawn();
+		}
 
 		// отрисовка всего
 		batch.setProjectionMatrix(camera.combined);
@@ -139,7 +146,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < shots.size; i++) {
 			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
 		}
-		batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
+		if(ship.isAlive) {
+			batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
+		}
 		font.draw(batch, "KILLS: "+kills, 10, SCR_HEIGHT-10);
 		for (int i = 0; i < ship.lives; i++) {
 			batch.draw(imgShip, SCR_WIDTH-70*i-70, SCR_HEIGHT-70, 60, 60);
@@ -180,7 +189,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	}
 
 	void killShip() {
+		sndExplosion.play();
 		ship.lives--;
+		ship.isAlive = false;
 		if(ship.lives == 0) {
 			gameOver();
 		}
