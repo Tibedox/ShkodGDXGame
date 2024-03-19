@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
@@ -34,6 +35,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	Sound sndExplosion;
 
 	// игровые объекты
+	Player[] players = new Player[11];
 	Stars[] stars = new Stars[2];
 	Array<Enemy> enemies = new Array<>();
 	Array<Shot> shots = new Array<>();
@@ -43,6 +45,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	// игровые переменные
 	int numFragments = 40;
 	int kills;
+	String playerName = "BigBoy";
 	boolean isGameOver;
 
 	// временнЫе переменные
@@ -57,6 +60,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 		touch = new Vector3();
 
+		// создаём и загружаем ресурсы
 		fontSmall = new BitmapFont(Gdx.files.internal("dscrystal70.fnt"));
 		fontLarge = new BitmapFont(Gdx.files.internal("dscrystal100.fnt"));
 		imgEnemy = new Texture("enemy1.png");
@@ -72,6 +76,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
 		sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
+
+		// создаём игровые объекты
+		for (int i = 0; i < players.length; i++) {
+			players[i] = new Player("Noname", 0);
+		}
 
 		stars[0] = new Stars(0);
 		stars[1] = new Stars(SCR_HEIGHT);
@@ -163,6 +172,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		}
 		if(isGameOver) {
 			fontLarge.draw(batch, "GAME OVER", 0, SCR_HEIGHT/4*3, SCR_WIDTH, Align.center, true);
+			for (int i = 0; i < players.length-1; i++) {
+				fontSmall.draw(batch, i+1+" "+players[i].name, 150, 1100-70*i);
+				String points = points(fontSmall, i+1+" "+players[i].name, ""+players[i].score, SCR_WIDTH-300);
+				fontSmall.draw(batch, points+players[i].score, 150, 1100-70*i, SCR_WIDTH-300, Align.right, true);
+			}
 		}
 
 		batch.end();
@@ -221,5 +235,33 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 	void gameOver() {
 		isGameOver = true;
+		players[players.length-1].name = playerName;
+		players[players.length-1].score = kills;
+		sortRecords();
+	}
+
+	String points(BitmapFont font, String textLeft, String textRight, float width) {
+		GlyphLayout glLeft = new GlyphLayout(font, textLeft);
+		GlyphLayout glRight = new GlyphLayout(font, textRight);
+		float allPointsWidth = width - glLeft.width - glRight.width;
+		GlyphLayout glPoint = new GlyphLayout(font, ".");
+		int nPoints = (int) (allPointsWidth/glPoint.width);
+		String s = "";
+		for (int i = 0; i < nPoints/2; i++) {
+			s += '.';
+		}
+		return s;
+	}
+	
+	void sortRecords(){
+		for (int j = 0; j < players.length-1; j++) {
+			for (int i = 0; i < players.length-1-j; i++) {
+				if(players[i].score<players[i+1].score){
+					Player c = players[i];
+					players[i] = players[i+1];
+					players[i+1] = c;
+				}
+			}
+		}
 	}
 }
