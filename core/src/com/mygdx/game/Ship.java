@@ -1,10 +1,9 @@
 package com.mygdx.game;
 
-import static com.mygdx.game.ShkodGDXGame.SCR_HEIGHT;
-import static com.mygdx.game.ShkodGDXGame.SCR_WIDTH;
+import static com.mygdx.game.ShkodGDXGame.*;
 
 public class Ship extends SpaceObject{
-    int lives = 1;
+    int lives = SHIP_LIVES;
     boolean isAlive;
 
     Ship(){

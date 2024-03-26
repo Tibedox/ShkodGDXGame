@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class ShkodGDXGame extends ApplicationAdapter {
 	// константы
 	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1700;
+	public static final int SHIP_LIVES = 1;
 
 	// системные объекты
 	SpriteBatch batch;
@@ -33,6 +34,9 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	TextureRegion[][] imgFragment = new TextureRegion[2][16];
 	Sound sndShot;
 	Sound sndExplosion;
+
+	ShkodButton btnRestart;
+	ShkodButton btnExit;
 
 	// игровые объекты
 	Player[] players = new Player[11];
@@ -77,6 +81,10 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
 		sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
 
+		// создаём кнопки
+		btnRestart = new ShkodButton("Restart", 300, fontSmall);
+		btnExit = new ShkodButton("Exit", 200, fontSmall);
+
 		// создаём игровые объекты
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player("Noname", 0);
@@ -96,6 +104,17 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			camera.unproject(touch);
 
 			ship.hit(touch.x);
+		}
+		if(Gdx.input.justTouched()){
+			touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touch);
+
+			if(isGameOver & btnExit.hit(touch.x, touch.y)){
+				Gdx.app.exit();
+			}
+			if(isGameOver & btnRestart.hit(touch.x, touch.y)){
+				gameRestart();
+			}
 		}
 
 		// события
@@ -177,6 +196,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 				String points = points(fontSmall, i+1+" "+players[i].name, ""+players[i].score, SCR_WIDTH-300);
 				fontSmall.draw(batch, points+players[i].score, 150, 1100-70*i, SCR_WIDTH-300, Align.right, true);
 			}
+			fontSmall.draw(batch, btnRestart.text, btnRestart.x, btnRestart.y);
+			fontSmall.draw(batch, btnExit.text, btnExit.x, btnExit.y);
 		}
 
 		batch.end();
@@ -238,6 +259,16 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		players[players.length-1].name = playerName;
 		players[players.length-1].score = kills;
 		sortRecords();
+	}
+
+	void gameRestart() {
+		isGameOver = false;
+		enemies.clear();
+		shots.clear();
+		fragments.clear();
+		ship.lives = SHIP_LIVES;
+		ship.respawn();
+		kills = 0;
 	}
 
 	String points(BitmapFont font, String textLeft, String textRight, float width) {
