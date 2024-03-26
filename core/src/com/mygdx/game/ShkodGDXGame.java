@@ -23,6 +23,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	OrthographicCamera camera;
 	Vector3 touch;
+	InputKeyboard keyboard;
 
 	// ресурсы
 	BitmapFont fontSmall;
@@ -51,6 +52,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	int kills;
 	String playerName = "BigBoy";
 	boolean isGameOver;
+	boolean isKeyboardUse;
 
 	// временнЫе переменные
 	long timeLastShot, timeShotInterval = 800;
@@ -81,6 +83,8 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
 		sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
 
+		keyboard = new InputKeyboard(SCR_WIDTH, SCR_HEIGHT/2, 12);
+
 		// создаём кнопки
 		btnRestart = new ShkodButton("Restart", 300, fontSmall);
 		btnExit = new ShkodButton("Exit", 200, fontSmall);
@@ -109,11 +113,18 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touch);
 
-			if(isGameOver & btnExit.hit(touch.x, touch.y)){
-				Gdx.app.exit();
-			}
-			if(isGameOver & btnRestart.hit(touch.x, touch.y)){
-				gameRestart();
+			if(isKeyboardUse) {
+				if (keyboard.endOfEdit(touch.x, touch.y)) {
+					playerName = keyboard.getText();
+					writeRecords();
+				}
+			} else {
+				if (isGameOver & btnExit.hit(touch.x, touch.y)) {
+					Gdx.app.exit();
+				}
+				if (isGameOver & btnRestart.hit(touch.x, touch.y)) {
+					gameRestart();
+				}
 			}
 		}
 
@@ -198,6 +209,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			}
 			fontSmall.draw(batch, btnRestart.text, btnRestart.x, btnRestart.y);
 			fontSmall.draw(batch, btnExit.text, btnExit.x, btnExit.y);
+			if(isKeyboardUse) keyboard.draw(batch);
 		}
 
 		batch.end();
@@ -214,6 +226,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		sndExplosion.dispose();
 		fontSmall.dispose();
 		fontLarge.dispose();
+		keyboard.dispose();
 	}
 
 	void spawnShots() {
@@ -256,9 +269,14 @@ public class ShkodGDXGame extends ApplicationAdapter {
 
 	void gameOver() {
 		isGameOver = true;
+		isKeyboardUse = true;
+	}
+
+	void writeRecords() {
 		players[players.length-1].name = playerName;
 		players[players.length-1].score = kills;
 		sortRecords();
+		isKeyboardUse = false;
 	}
 
 	void gameRestart() {
