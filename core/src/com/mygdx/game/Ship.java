@@ -35,6 +35,7 @@ public class Ship extends SpaceObject{
 
     void respawn() {
         isAlive = true;
+        vx = 0;
         x = SCR_WIDTH/2;
         y = SCR_HEIGHT/12;
     }

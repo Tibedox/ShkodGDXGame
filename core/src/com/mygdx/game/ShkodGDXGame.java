@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -93,6 +94,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player("Noname", 0);
 		}
+		loadRecords();
 
 		stars[0] = new Stars(0);
 		stars[1] = new Stars(SCR_HEIGHT);
@@ -276,6 +278,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		players[players.length-1].name = playerName;
 		players[players.length-1].score = kills;
 		sortRecords();
+		saveRecords();
 		isKeyboardUse = false;
 	}
 
@@ -287,6 +290,12 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		ship.lives = SHIP_LIVES;
 		ship.respawn();
 		kills = 0;
+		// засыпаем на 1 с
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	String points(BitmapFont font, String textLeft, String textRight, float width) {
@@ -311,6 +320,23 @@ public class ShkodGDXGame extends ApplicationAdapter {
 					players[i+1] = c;
 				}
 			}
+		}
+	}
+
+	void saveRecords(){
+		Preferences preferences = Gdx.app.getPreferences("records");
+		for (int i = 0; i < players.length; i++) {
+			preferences.putString("player"+i, players[i].name);
+			preferences.putInteger("score"+i, players[i].score);
+		}
+		preferences.flush();
+	}
+
+	void loadRecords(){
+		Preferences preferences = Gdx.app.getPreferences("records");
+		for (int i = 0; i < players.length; i++) {
+			if(preferences.contains("player"+i)) players[i].name = preferences.getString("player"+i);
+			if(preferences.contains("score"+i)) players[i].score = preferences.getInteger("score"+i);
 		}
 	}
 }
