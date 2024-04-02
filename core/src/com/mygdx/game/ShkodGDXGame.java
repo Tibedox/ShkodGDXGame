@@ -29,10 +29,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 	// ресурсы
 	BitmapFont fontSmall;
 	BitmapFont fontLarge;
+	Texture imgAtlasShips;
 	Texture imgEnemy;
-	Texture imgShip;
 	Texture imgStars;
 	Texture imgShot;
+	TextureRegion[] imgShip = new TextureRegion[12];
 	TextureRegion[][] imgFragment = new TextureRegion[2][16];
 	Sound sndShot;
 	Sound sndExplosion;
@@ -70,12 +71,20 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		// создаём и загружаем ресурсы
 		fontSmall = new BitmapFont(Gdx.files.internal("dscrystal70.fnt"));
 		fontLarge = new BitmapFont(Gdx.files.internal("dscrystal100.fnt"));
+		imgAtlasShips = new Texture("ships_atlas3.png");
 		imgEnemy = new Texture("enemy1.png");
 		imgStars = new Texture("stars.png");
-		imgShip = new Texture("ship.png");
 		imgShot = new Texture("shipshot.png");
+
+		for (int i = 0; i < imgShip.length; i++) {
+			if(i<7) {
+				imgShip[i] = new TextureRegion(imgAtlasShips, i * 400, 0, 400, 400);
+			} else {
+				imgShip[i] = new TextureRegion(imgAtlasShips, (12-i)*400, 0, 400, 400);
+			}
+		}
 		for (int i = 0; i < imgFragment[0].length; i++) {
-			imgFragment[0][i] = new TextureRegion(imgShip, i%4*100, i/4*100, 100, 100);
+			imgFragment[0][i] = new TextureRegion(imgShip[0], i%4*100, i/4*100, 100, 100);
 		}
 		for (int i = 0; i < imgFragment[1].length; i++) {
 			imgFragment[1][i] = new TextureRegion(imgEnemy, i%4*100, i/4*100, 100, 100);
@@ -196,11 +205,11 @@ public class ShkodGDXGame extends ApplicationAdapter {
 			batch.draw(imgShot, shots.get(i).getX(), shots.get(i).getY(), shots.get(i).width, shots.get(i).height);
 		}
 		if(ship.isAlive) {
-			batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
+			batch.draw(imgShip[ship.phase], ship.getX(), ship.getY(), ship.width, ship.height);
 		}
 		fontSmall.draw(batch, "KILLS: "+kills, 10, SCR_HEIGHT-10);
 		for (int i = 0; i < ship.lives; i++) {
-			batch.draw(imgShip, SCR_WIDTH-70*i-70, SCR_HEIGHT-70, 60, 60);
+			batch.draw(imgShip[0], SCR_WIDTH-70*i-70, SCR_HEIGHT-70, 60, 60);
 		}
 		if(isGameOver) {
 			fontLarge.draw(batch, "GAME OVER", 0, SCR_HEIGHT/4*3, SCR_WIDTH, Align.center, true);
@@ -222,7 +231,7 @@ public class ShkodGDXGame extends ApplicationAdapter {
 		batch.dispose();
 		imgEnemy.dispose();
 		imgStars.dispose();
-		imgShip.dispose();
+		imgAtlasShips.dispose();
 		imgShot.dispose();
 		sndShot.dispose();
 		sndExplosion.dispose();

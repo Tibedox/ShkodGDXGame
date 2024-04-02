@@ -19,6 +19,7 @@ public class Enemy extends SpaceObject{
     @Override
     void move(){
         super.move();
+        changePhase();
     }
 
     boolean outOfScreen() {

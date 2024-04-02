@@ -16,7 +16,10 @@ public class Ship extends SpaceObject{
     void move(){
         super.move();
         outOfScreen();
+        changePhase();
     }
+
+
 
     void hit(float tx){
         vx = (tx-x)/10;

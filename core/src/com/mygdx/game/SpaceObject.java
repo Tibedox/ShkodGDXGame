@@ -1,14 +1,25 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.utils.TimeUtils;
+
 public class SpaceObject {
     float x, y;
     float vx, vy;
     float width, height;
     int type;
+    int phase, nPhases = 12;
+    long timeLastPhase, timeChangePhaseInterval = 30;
 
     void move(){
         x += vx;
         y += vy;
+    }
+
+    void changePhase() {
+        if(TimeUtils.millis() > timeLastPhase+timeChangePhaseInterval) {
+            if (++phase == nPhases) phase = 0;
+            timeLastPhase = TimeUtils.millis();
+        }
     }
 
     float getX(){
